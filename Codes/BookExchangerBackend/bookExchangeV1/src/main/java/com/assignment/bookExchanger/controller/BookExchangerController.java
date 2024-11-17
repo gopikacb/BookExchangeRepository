@@ -31,8 +31,8 @@ public class BookExchangerController {
 	@Autowired
 	private BookDetailsRepository bookDetailsRepository;
 	
-//	@Autowired
-//	private ExchangeRequestRepository exchangeRequestRepository;
+	@Autowired
+	private ExchangeRequestRepository exchangeRequestRepository;
 	
 //	@Autowired
 //    private UserDetailsService userService;
@@ -55,11 +55,14 @@ public class BookExchangerController {
 	        }
 	        return bookDetailsRepository.findAll();
 	    }
-//	 
-//	 @PostMapping("/exchange")
-//	    public ExchangeRequest createExchangeRequest(@RequestBody ExchangeRequest exchangeRequest) {
-//	        return exchangeRequestRepository.save(exchangeRequest);
-//	    }
-	 
+	 @PostMapping("/exchange")
+	 public ExchangeRequest createExchangeRequest(@RequestBody ExchangeRequest exchangeRequest) {
+	     List<BookDetails> managedBooks = exchangeRequest.getBookList().stream()
+	         .map(book -> bookDetailsRepository.findById(book.getId()).orElseThrow(() -> new RuntimeException("Book not found")))
+	         .toList();
+	     exchangeRequest.setBookList(managedBooks);
+	     return exchangeRequestRepository.save(exchangeRequest);
 
+	 }
+	 
 }
